@@ -1,0 +1,70 @@
+version: '3.1'
+services:
+  odoo:
+    build: 
+      context: ./bin
+      args:
+        ODOO_VERSION: "13.0"
+    container_name: odoo_v13
+    restart: always
+    ports:
+      - "8069"
+      - "8072"
+    volumes:
+      - odoo_data-web:/var/lib/odoo
+      - ./bin/config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    environment:
+      HOST: postgresql_db
+      USER: odoo
+      PASSWORD: myodoo
+      WDB_SOCKET_SERVER: wdb
+      WDB_NO_BROWSER_AUTO_OPEN: 1
+      WDB_WEB_SERVER: "localhost"
+      WDB_WEB_PORT: "1984"
+      TZ: America/Asuncion
+    command:
+      - odoo
+      - --dev=all
+      #- --update=hcs_bm_ecovis,hcs_bank_management
+
+  postgresql:
+    image: postgres
+    container_name: postgresql
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=myodoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo_data-db:/var/lib/postgresql/data/pgdata
+      # v13 - odoo-db-data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+
+  nginx:
+    build:
+      context: .
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./proxy/sites:/etc/nginx/sites-enabled
+      - ./proxy/ssl:/etc/nginx/ssl.d
+      - ./proxy/www:/var/www/html
+
+  wdb:
+    image: kozea/wdb
+    container_name: "wdb"
+    restart: always
+    ports:
+      - "13984:1984"
+    # HACK https://github.com/Kozea/wdb/issues/136
+    init: true
+
+volumes:
+  odoo_data-db:
+  odoo_data-web:
