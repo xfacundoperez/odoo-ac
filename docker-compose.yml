@@ -2,7 +2,7 @@ version: '3.1'
 services:
   odoo:
     build: 
-      context: ./bin
+      context: ./odoo
       args:
         ODOO_VERSION: "13.0"
     container_name: odoo_v13
@@ -12,7 +12,7 @@ services:
       - "8072"
     volumes:
       - odoo_data-web:/var/lib/odoo
-      - ./bin/config:/etc/odoo
+      - ./odoo/config:/etc/odoo
       - ./addons:/mnt/extra-addons
     environment:
       HOST: postgresql_db
@@ -45,7 +45,7 @@ services:
 
   nginx:
     build:
-      context: .
+      context: ./proxy
     container_name: nginx_proxy
     ports:
       - "80:80"
