@@ -13,4 +13,4 @@ git clone https://github.com/oca/reporting-engine.git -b $ODOO_VERSION --depth $
 git clone https://github.com/OCA/server-auth.git -b $ODOO_VERSION --depth $DEPTH_DEFAULT $ADDONS_PATH/server-auth
 
 # add requiremts
-find $(pwd)/addons -type f -name "requirements.txt" -exec cat '{}' \; > $(pwd)/bin/files/requirements.txt
+find $(pwd)/addons -type f -name "requirements.txt" -exec cat '{}' \; > $(pwd)/odoo/files/requirements.txt
