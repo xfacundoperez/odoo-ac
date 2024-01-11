@@ -1,3 +1,4 @@
 addons/
 odoo/files/
-proxy/www/videos
+proxy/ssl/
+proxy/www/videos/
