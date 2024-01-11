@@ -1,0 +1,39 @@
+server {
+	listen 80;
+	#server_name example.com;
+	server_name _;
+
+	location / {
+		return 301 https://$host$request_uri;
+	}
+}
+
+server {
+	listen 443 ssl;
+	server_name _;
+
+	root /var/www/html;
+	error_log /var/log/nginx/error.log;
+	access_log /var/log/nginx/access.log;
+
+	ssl_certificate /etc/nginx/ssl.d/fullchain.pem;
+	ssl_certificate_key /etc/nginx/ssl.d/privkey.pem;
+	ssl_prefer_server_ciphers On;
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	ssl_ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS;
+	ssl_session_timeout 10m;
+	add_header Strict-Transport-Security "max-age=31536000";
+	client_max_body_size 15M;
+
+	include /etc/nginx/location.d/*.conf;
+
+	location / {
+		try_files $uri $uri/ /not_found.html;
+	}
+
+	error_page 404 /not_found.html;
+	location = /not_found.html {
+		root /var/www/html;
+		internal;
+	}
+}
